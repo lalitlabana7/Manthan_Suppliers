@@ -1,0 +1,510 @@
+/* -----------------------------------
+   Base Styles
+----------------------------------- */
+
+body, html {
+  margin: 0;
+  padding: 0;
+  min-width: 0;
+  font-size: 16px;
+  -webkit-text-size-adjust: 100%; /* Prevent font scaling on iOS */
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+header {
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  color: white;
+  padding: 20px 0;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+  border-radius: 12px;
+  margin-bottom: 20px;
+}
+
+header::before,
+header::after {
+  content: '';
+  position: absolute;
+  border-radius: 50%;
+  opacity: 0.3;
+  z-index: 0;
+}
+
+header::before {
+  width: 200px;
+  height: 200px;
+  background: #ff6a00;
+  top: -50px;
+  left: -50px;
+  filter: blur(70px);
+}
+
+header::after {
+  width: 150px;
+  height: 150px;
+  background: #ffe600;
+  bottom: -40px;
+  right: -40px;
+  filter: blur(50px);
+}
+
+header h1 {
+  z-index: 1;
+  position: relative;
+  font-size: 2.8rem;
+  font-weight: 700;
+  letter-spacing: 1.2px;
+}
+
+header p {
+  z-index: 1;
+  position: relative;
+  font-size: 1rem;
+  font-weight: 500;
+  margin-top: 8px;
+  color: #ffffffcc;
+}
+
+/* Navigation */
+nav {
+  display: flex;
+  gap: 25px;
+  justify-content: center;
+  margin-bottom: 24px;
+  background: #fff;
+  padding: 12px 20px;
+  border-radius: 20px;
+  box-shadow: 0 8px 20px rgba(102, 126, 234, 0.25);
+  max-width: 400px;
+  margin-left: auto;
+  margin-right: auto;
+  flex-wrap: nowrap;
+}
+
+nav a {
+  color: #555555;
+  text-decoration: none;
+  font-weight: 700;
+  font-size: 1.15rem;
+  padding: 10px 22px;
+  border-radius: 12px;
+  background: #f0f4ff;
+  transition: all 0.25s ease;
+  box-shadow: inset 0 0 0 0 #667eea;
+  border: 2px solid transparent;
+  white-space: nowrap;
+}
+
+nav a:hover {
+  background: #667eea;
+  color: #ffffff;
+  box-shadow: inset 0 0 10px 4px rgba(102, 126, 234, 0.7);
+  transform: translateY(-2px);
+}
+
+nav a.active {
+  background: #304ffe;
+  box-shadow: inset 0 0 15px 5px rgba(48, 79, 254, 0.8);
+  color: #ffffff;
+  pointer-events: none;
+  cursor: default;
+  font-weight: 800;
+}
+
+/* -----------------------------------
+   Layout Containers
+----------------------------------- */
+
+.admin-card,
+.main-card,
+.login-card {
+  max-width: 480px;
+  width: 90%;
+  margin: 30px auto;
+  background: #f9faff;
+  border-radius: 18px;
+  box-shadow: 0 12px 28px rgba(102, 126, 234, 0.18);
+  padding: 30px 28px;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  color: #2d2d2d;
+  box-sizing: border-box;
+}
+
+/* -----------------------------------
+   Selectors and Form Fields
+----------------------------------- */
+
+.selector-row {
+  margin-bottom: 20px;
+  max-width: 100%;
+  margin-left: auto;
+  margin-right: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.selector-row label {
+  font-weight: 700;
+  font-size: 1.1rem;
+  color: #333;
+  margin-left: 4px;
+}
+
+.selector-row select {
+  padding: 10px 14px;
+  font-size: 1rem;
+  border: 2px solid #667eea;
+  border-radius: 10px;
+  background-color: #f0f4ff;
+  color: #333;
+  outline: none;
+  transition: border-color 0.3s ease;
+  cursor: pointer;
+}
+
+.selector-row select:hover,
+.selector-row select:focus {
+  border-color: #304ffe;
+  box-shadow: 0 0 8px rgba(48, 79, 254, 0.5);
+}
+
+/* Form fields */
+.form-fields {
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.form-group label {
+  font-weight: 600;
+  font-size: 1rem;
+  margin-bottom: 6px;
+  color: #333;
+}
+
+.form-group input {
+  padding: 12px 16px;
+  font-size: 1rem;
+  border-radius: 12px;
+  border: 2px solid #667eea;
+  background: #f5f8ff;
+  outline: none;
+  transition: border-color 0.3s ease;
+}
+
+.form-group input:focus {
+  border-color: #304ffe;
+  box-shadow: 0 0 8px rgba(48, 79, 254, 0.5);
+}
+
+/* -----------------------------------
+   Buttons
+----------------------------------- */
+
+.primary-btn {
+  background: #304ffe;
+  color: white;
+  font-weight: 700;
+  padding: 14px;
+  font-size: 1.15rem;
+  border: none;
+  border-radius: 14px;
+  cursor: pointer;
+  box-shadow: 0 8px 24px rgba(48, 79, 254, 0.6);
+  transition: background-color 0.3s ease;
+  width: 100%;
+  max-width: 320px;
+  box-sizing: border-box;
+}
+
+.primary-btn:disabled {
+  background: #a1a7f0;
+  cursor: not-allowed;
+}
+
+.primary-btn:hover:not(:disabled) {
+  background: #1c36d6;
+}
+
+.secondary-btn {
+  background: #667eea;
+  border: none;
+  border-radius: 14px;
+  color: white;
+  font-weight: 700;
+  font-size: 1.05rem;
+  cursor: pointer;
+  box-shadow: 0 6px 14px rgba(102, 126, 234, 0.4);
+  transition: background-color 0.3s ease, box-shadow 0.3s ease;
+  padding: 12px;
+  width: 100%;
+  max-width: 320px;
+  box-sizing: border-box;
+}
+
+.secondary-btn:hover {
+  background: #4353c3;
+  box-shadow: 0 9px 22px rgba(67, 83, 195, 0.6);
+}
+
+.capture-btn {
+  padding: 12px 24px;
+  font-weight: 700;
+  font-size: 1.05rem;
+  background: #667eea;
+  color: white;
+  border: none;
+  border-radius: 14px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  box-shadow: 0 6px 14px rgba(102, 126, 234, 0.45);
+  width: 100%;
+  max-width: 280px;
+  box-sizing: border-box;
+  align-self: center;
+}
+
+.capture-btn:hover {
+  background: #4353c3;
+}
+
+/* -----------------------------------
+   Camera Preview
+----------------------------------- */
+
+.camera-section {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  justify-content: center;
+  flex-wrap: wrap;
+  flex-direction: column;
+}
+
+.camera-preview {
+  width: 100%;
+  max-width: 280px;
+  height: auto;
+  position: relative;
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
+  background: black;
+}
+
+.camera-preview video,
+.camera-preview img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 14px;
+}
+
+/* -----------------------------------
+   Messages and Alerts
+----------------------------------- */
+
+.message {
+  margin-top: 18px;
+  padding: 14px 18px;
+  background-color: #e7f3ff;
+  border: 1px solid #9cc4ff;
+  border-radius: 12px;
+  color: #1557ff;
+  font-weight: 600;
+  text-align: center;
+  max-width: 480px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* -----------------------------------
+  Login Page Styles
+----------------------------------- */
+
+.login-wrapper {
+  min-height: 70vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  box-sizing: border-box;
+}
+
+.login-card {
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  color: white;
+  padding: 40px 32px;
+  border-radius: 18px;
+  box-shadow: 0 16px 40px rgba(102, 126, 234, 0.4);
+  width: 100%;
+  max-width: 400px;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  text-align: center;
+}
+
+.login-card h2 {
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: 24px;
+}
+
+.login-card form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.login-card input {
+  padding: 14px 16px;
+  font-size: 1rem;
+  border: none;
+  border-radius: 12px;
+  outline: none;
+  background-color: #f7f9ff;
+  color: #333;
+  box-shadow: 0 0 0 2px transparent;
+  transition: box-shadow 0.3s ease;
+}
+
+.login-card input:focus {
+  box-shadow: 0 0 0 2px #ffe600;
+}
+
+.login-card button {
+  padding: 14px 0;
+  font-size: 1.1rem;
+  font-weight: bold;
+  color: #fff;
+  background-color: #ff6a00;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  box-shadow: 0 8px 18px rgba(255, 106, 0, 0.4);
+  transition: background-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.login-card button:hover {
+  background-color: #e05d00;
+  box-shadow: 0 10px 24px rgba(255, 106, 0, 0.6);
+}
+
+.login-error {
+  margin-top: 18px;
+  background-color: #ffdddd;
+  color: #d8000c;
+  padding: 12px 16px;
+  border-radius: 10px;
+  font-weight: 600;
+  box-shadow: 0 0 10px rgba(255, 0, 0, 0.2);
+}
+
+/* -----------------------------------
+   Admin Actions
+----------------------------------- */
+
+.admin-actions {
+  display: flex;
+  gap: 20px;
+  justify-content: center;
+  margin-top: 24px;
+  flex-wrap: wrap;
+}
+
+.admin-actions button.secondary-btn {
+  flex: 1 1 140px;
+  padding: 12px 0;
+  background: #667eea;
+  border: none;
+  border-radius: 14px;
+  color: white;
+  font-weight: 700;
+  font-size: 1.05rem;
+  cursor: pointer;
+  box-shadow: 0 6px 14px rgba(102, 126, 234, 0.4);
+  transition: background-color 0.3s ease, box-shadow 0.3s ease;
+  max-width: 320px;
+  box-sizing: border-box;
+}
+
+.admin-actions button.secondary-btn:hover {
+  background: #4353c3;
+  box-shadow: 0 9px 22px rgba(67, 83, 195, 0.6);
+}
+
+/* -----------------------------------
+   Responsive / Mobile styles
+----------------------------------- */
+
+@media (max-width: 768px) {
+  header h1 {
+    font-size: 2rem;
+  }
+
+  nav {
+    gap: 12px;
+    padding: 10px 12px;
+    max-width: 100%;
+  }
+
+  nav a {
+    font-size: 1rem;
+    padding: 8px 14px;
+    flex-grow: 1;
+    text-align: center;
+  }
+
+  .admin-card,
+  .main-card,
+  .login-card {
+    width: 95%;
+    padding: 24px 20px;
+  }
+
+  .form-fields {
+    gap: 18px;
+  }
+
+  button.primary-btn,
+  button.secondary-btn,
+  .capture-btn {
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .camera-preview {
+    max-width: 100%;
+  }
+
+  .camera-section {
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .admin-actions {
+    flex-direction: column;
+    gap: 16px;
+  }
+}
+
+@media (max-width: 400px) {
+  header h1 {
+    font-size: 1.5rem;
+  }
+
+  nav a {
+    font-size: 0.9rem;
+  }
+
+  input, select {
+    font-size: 0.9rem;
+    padding: 8px 12px;
+  }
+}
