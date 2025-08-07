@@ -1,22 +1,24 @@
 import React, { useState } from 'react';
 const API_URL = process.env.REACT_APP_API_URL;
+
 function AdminDashboard({ schools, addSchool }) {
   const [selectedSchool, setSelectedSchool] = useState('');
   const [showAddSchool, setShowAddSchool] = useState(false);
   const [newSchoolName, setNewSchoolName] = useState('');
   const [message, setMessage] = useState('');
 
- const handleDownloadExcel = () => {
-  if (selectedSchool) {
-    window.open(`${API_URL}/api/admin/download/excel/${selectedSchool}`, '_blank');
-  }
-};
+  const handleDownloadExcel = () => {
+    if (selectedSchool) {
+      window.open(`${API_URL}/api/admin/download/excel/${encodeURIComponent(selectedSchool)}`, '_blank');
+    }
+  };
 
-const handleDownloadPhotos = () => {
-  if (selectedSchool) {
-    window.open(`${API_URL}/api/admin/download/photos/${selectedSchool}`, '_blank');
-  }
-};
+  const handleDownloadPhotos = () => {
+    if (selectedSchool) {
+      window.open(`${API_URL}/api/admin/download/photos/${encodeURIComponent(selectedSchool)}`, '_blank');
+    }
+  };
+
   const toggleAddSchool = () => {
     setShowAddSchool(prev => !prev);
     setNewSchoolName('');
@@ -35,12 +37,13 @@ const handleDownloadPhotos = () => {
       return;
     }
 
-   try {
-  const response = await fetch(`${API_URL}/api/schools`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ schoolName: trimmedName }),
-  });
+    try {
+      const response = await fetch(`${API_URL}/api/schools`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ schoolName: trimmedName }),
+      });
+
       if (!response.ok) {
         const data = await response.json();
         setMessage(data.message || 'Failed to add school.');

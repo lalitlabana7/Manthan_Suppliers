@@ -1,4 +1,3 @@
-// backend/routes/api.js
 const express = require('express');
 const multer = require('multer');
 const path = require('path');
@@ -10,28 +9,42 @@ const School = require('../models/School');
 
 const router = express.Router();
 
-// Configure Multer for file uploads
+// Multer configuration for file uploads - accepts only images up to 2MB
 const storage = multer.diskStorage({
   destination: './uploads/photos/',
   filename: function (req, file, cb) {
     cb(null, 'PHOTO-' + Date.now() + path.extname(file.originalname));
   },
 });
-const upload = multer({ storage: storage });
+
+const upload = multer({
+  storage,
+  fileFilter: (req, file, cb) => {
+    const allowedTypes = /jpeg|jpg|png/;
+    const ext = path.extname(file.originalname).toLowerCase();
+    if (allowedTypes.test(ext)) {
+      cb(null, true);
+    } else {
+      cb(new Error('Only jpeg, jpg, png files are allowed'));
+    }
+  },
+  limits: { fileSize: 2 * 1024 * 1024 }, // 2MB size limit
+});
 
 // === API ENDPOINTS ===
 
 // 1. Get a list of schools
 router.get('/schools', async (req, res) => {
   try {
-    const schools = await School.find({}, 'name');
+    const schools = await School.find({}, 'name').lean();
     res.json(schools.map(s => s.name));
   } catch (error) {
+    console.error('Error fetching schools:', error);
     res.status(500).json({ message: 'Server Error', error });
   }
 });
 
-// 2. Handle new student registration (UPDATED)
+// 2. Handle new student registration (with photo upload and dateOfBirth handling)
 router.post('/students', upload.single('studentPhoto'), async (req, res) => {
   try {
     const {
@@ -48,15 +61,20 @@ router.post('/students', upload.single('studentPhoto'), async (req, res) => {
       dateOfBirth
     } = req.body;
 
+    // Validate required fields
     if (!studentName || !fatherName || !motherName || !studentClass || !srNo || !schoolName) {
       return res.status(400).json({ message: 'Missing required fields' });
     }
 
     if (!req.file) {
-      return res.status(400).send('Photo is required.');
+      return res.status(400).json({ message: 'Photo is required.' });
     }
 
+    // Validate dateOfBirth if present
     const dob = dateOfBirth ? new Date(dateOfBirth) : null;
+    if (dob && isNaN(dob.getTime())) {
+      return res.status(400).json({ message: 'Invalid date of birth' });
+    }
 
     const newStudent = new Student({
       studentName,
@@ -70,20 +88,29 @@ router.post('/students', upload.single('studentPhoto'), async (req, res) => {
       bloodGroup,
       schoolName,
       photoFilename: req.file.filename,
-      dateOfBirth: dob
+      dateOfBirth: dob,
     });
 
     await newStudent.save();
     res.status(201).json({ message: 'Student registered successfully!' });
   } catch (error) {
+    console.error('Error registering student:', error);
+
+    // Handle Multer file type or size errors explicitly
+    if (error instanceof multer.MulterError) {
+      return res.status(400).json({ message: error.message });
+    } else if (error.message === 'Only jpeg, jpg, png files are allowed') {
+      return res.status(400).json({ message: error.message });
+    }
+
     res.status(500).json({ message: 'Server Error', error });
   }
 });
 
-// 3. Download Excel file for a school (UPDATED with blood group and dateOfBirth)
+// 3. Download Excel file for a school (with blood group, dateOfBirth, SR.NO header)
 router.get('/admin/download/excel/:schoolName', async (req, res) => {
   try {
-    const students = await Student.find({ schoolName: req.params.schoolName });
+    const students = await Student.find({ schoolName: req.params.schoolName }).lean();
     const workbook = new exceljs.Workbook();
     const worksheet = workbook.addWorksheet('Students');
 
@@ -92,7 +119,7 @@ router.get('/admin/download/excel/:schoolName', async (req, res) => {
       { header: 'Father Name', key: 'fatherName', width: 30 },
       { header: 'Mother Name', key: 'motherName', width: 30 },
       { header: 'Class', key: 'class', width: 10 },
-      { header: 'Serial Number', key: 'srNo', width: 15 },
+      { header: 'SR.NO', key: 'srNo', width: 15 }, // Updated header name
       { header: 'Unique ID', key: 'uniqueId', width: 20 },
       { header: 'Contact Number', key: 'contactNo', width: 15 },
       { header: 'Address', key: 'address', width: 50 },
@@ -101,15 +128,13 @@ router.get('/admin/download/excel/:schoolName', async (req, res) => {
       { header: 'Photo Filename', key: 'photoFilename', width: 40 },
     ];
 
-    // Format dateOfBirth field as 'YYYY-MM-DD' string if present
     const formattedStudents = students.map(student => {
-      const studentObj = student.toObject();
-      if (studentObj.dateOfBirth) {
-        studentObj.dateOfBirth = new Date(studentObj.dateOfBirth).toISOString().split('T')[0];
+      if (student.dateOfBirth) {
+        student.dateOfBirth = new Date(student.dateOfBirth).toISOString().split('T')[0];
       } else {
-        studentObj.dateOfBirth = '';
+        student.dateOfBirth = '';
       }
-      return studentObj;
+      return student;
     });
 
     worksheet.addRows(formattedStudents);
@@ -122,9 +147,11 @@ router.get('/admin/download/excel/:schoolName', async (req, res) => {
       'Content-Disposition',
       `attachment; filename="${req.params.schoolName}-students.xlsx"`
     );
+
     await workbook.xlsx.write(res);
     res.end();
   } catch (error) {
+    console.error('Error generating Excel:', error);
     res.status(500).json({ message: 'Error generating Excel file', error });
   }
 });
@@ -133,6 +160,7 @@ router.get('/admin/download/excel/:schoolName', async (req, res) => {
 router.get('/admin/download/photos/:schoolName', async (req, res) => {
   try {
     const students = await Student.find({ schoolName: req.params.schoolName });
+
     const archive = archiver('zip', { zlib: { level: 9 } });
 
     res.setHeader('Content-Type', 'application/zip');
@@ -152,6 +180,7 @@ router.get('/admin/download/photos/:schoolName', async (req, res) => {
 
     await archive.finalize();
   } catch (error) {
+    console.error('Error generating ZIP:', error);
     res.status(500).json({ message: 'Error generating ZIP file', error });
   }
 });
@@ -174,6 +203,7 @@ router.post('/schools', async (req, res) => {
 
     res.status(201).json({ message: 'School added successfully', school: newSchool });
   } catch (error) {
+    console.error('Error adding school:', error);
     res.status(500).json({ message: 'Server Error', error });
   }
 });

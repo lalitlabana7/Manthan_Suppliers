@@ -1,10 +1,8 @@
 import React, { useState, useRef, useEffect } from 'react';
-const API_URL = process.env.REACT_APP_API_URL ;
+const API_URL = process.env.REACT_APP_API_URL;
 
 function RegistrationPage({ schools }) {
-  const [selectedSchool, setSelectedSchool] = useState(() => {
-    return localStorage.getItem('selectedSchool') || '';
-  });
+  const [selectedSchool, setSelectedSchool] = useState(() => localStorage.getItem('selectedSchool') || '');
 
   const [formData, setFormData] = useState({
     studentName: '',
@@ -15,26 +13,27 @@ function RegistrationPage({ schools }) {
     uniqueId: '',
     contactNo: '',
     address: '',
-    bloodGroup: '', 
+    bloodGroup: '',
+    dateOfBirth: '',
   });
 
   const [photo, setPhoto] = useState(null);
   const [message, setMessage] = useState('');
-
   const videoRef = useRef(null);
   const canvasRef = useRef(null);
   const streamRef = useRef(null);
 
   const fields = [
-    { name: 'studentName', label: "Full Name", type: "text", placeholder: "Enter full name", required: true },
-    { name: 'fatherName', label: "Father's Name", type: "text", placeholder: "Enter father's name", required: true },
-    { name: 'motherName', label: "Mother's Name", type: "text", placeholder: "Enter mother's name", required: true },
-    { name: 'class', label: "Class", type: "text", placeholder: "Enter class", required: true },
-    { name: 'srNo', label: "Serial Number", type: "text", placeholder: "Enter serial number", required: true },
-    { name: 'uniqueId', label: "Unique ID", type: "text", placeholder: "Enter unique ID", required: false },
-    { name: 'contactNo', label: "Contact Number", type: "text", placeholder: "Enter contact number", required: false },
-    { name: 'address', label: "Address", type: "text", placeholder: "Enter address", required: false },
-    { name: 'bloodGroup', label: "Blood Group", type: "text", placeholder: "Enter blood group", required: false },
+    { name: 'studentName', label: "Full Name", type: "text", required: true },
+    { name: 'fatherName', label: "Father's Name", type: "text", required: true },
+    { name: 'motherName', label: "Mother's Name", type: "text", required: true },
+    { name: 'class', label: "Class", type: "text", required: true },
+    { name: 'srNo', label: "SR.NO", type: "text", required: true },  // Changed label
+    { name: 'uniqueId', label: "Unique ID", type: "text", required: false },
+    { name: 'contactNo', label: "Contact Number", type: "text", required: false },
+    { name: 'address', label: "Address", type: "text", required: false },
+    { name: 'bloodGroup', label: "Blood Group", type: "text", required: false },
+    { name: 'dateOfBirth', label: "Date of Birth", type: "date", required: false }, // New field
   ];
 
   const handleInputChange = (e) => {
@@ -45,7 +44,7 @@ function RegistrationPage({ schools }) {
   const startCamera = async () => {
     try {
       const stream = await navigator.mediaDevices.getUserMedia({
-        video: { facingMode: { exact: 'environment' } }, // Open back camera
+        video: { facingMode: { exact: 'environment' } },
         audio: false
       });
       streamRef.current = stream;
@@ -53,7 +52,6 @@ function RegistrationPage({ schools }) {
         videoRef.current.srcObject = stream;
       }
     } catch (error) {
-      // Fallback to front camera
       try {
         const fallbackStream = await navigator.mediaDevices.getUserMedia({
           video: true,
@@ -109,7 +107,9 @@ function RegistrationPage({ schools }) {
     const submissionData = new FormData();
     submissionData.append('schoolName', selectedSchool);
     Object.keys(formData).forEach(key => {
-      submissionData.append(key, formData[key]);
+      if (formData[key] !== undefined && formData[key] !== null) {
+        submissionData.append(key, formData[key]);
+      }
     });
     submissionData.append('studentPhoto', photo, 'photo.jpg');
 
@@ -131,7 +131,8 @@ function RegistrationPage({ schools }) {
           uniqueId: '',
           contactNo: '',
           address: '',
-          bloodGroup: ''
+          bloodGroup: '',
+          dateOfBirth: '',
         });
         setPhoto(null);
         stopCamera();
@@ -206,8 +207,8 @@ function RegistrationPage({ schools }) {
                   name={field.name}
                   value={formData[field.name] || ''}
                   onChange={handleInputChange}
+                  placeholder={`Enter ${field.label.toLowerCase()}`}
                   autoComplete="off"
-                  placeholder={field.placeholder}
                   required={field.required}
                 />
               </div>
