@@ -5,9 +5,12 @@ const cors = require('cors');
 const path = require('path');
 const fs = require('fs');
 const apiRoutes = require('./routes/api');
+require('dotenv').config();
+
 
 const app = express();
 const PORT = process.env.PORT || 5000;
+const dbURI = process.env.MONGODB_URI;
 
 // === 1. Middleware ===
 app.use(cors());
@@ -21,7 +24,7 @@ if (!fs.existsSync(uploadDir)) {
 }
 
 // === 3. MongoDB Connection ===
-mongoose.connect('mongodb+srv://darshilchudasama22394:Z8A1cBlACLeV15o7@cluster0.kiv0fpe.mongodb.net/studentDB', {
+mongoose.connect(dbURI, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
 })
